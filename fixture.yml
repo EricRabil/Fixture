@@ -1,0 +1,7 @@
+!com.ericrabil.fixture.api.config.DBConfig
+db_collation: utf8
+db_ip: 0.0.0.0
+db_name: fixture
+db_pass: fixpass
+db_port: 3306
+db_user: fixuser
