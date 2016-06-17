@@ -3,10 +3,6 @@ package com.ericrabil.fixture.database.db;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.commons.dbcp.BasicDataSource;
 
 import com.ericrabil.fixture.Fixture;
@@ -14,12 +10,12 @@ import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
 
-public class DBContextFactory implements IContextFactory{
-	
+public class DBContextFactory implements IContextFactory {
+
 	private BasicDataSource ds;
 	private Map<String, LoggingConnection.LogEntry> queryLog;
 	private Fixture fixture;
-	
+
 	public DBContextFactory(Fixture instance) {
 		queryLog = new HashMap<>();
 
@@ -49,7 +45,7 @@ public class DBContextFactory implements IContextFactory{
 
 		this.fixture = instance;
 	}
-	
+
 	@Override
 	public IContext createContext() throws DAOException {
 		// TODO Auto-generated method stub

@@ -6,16 +6,15 @@ import java.sql.SQLException;
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.database.IContext;
 
-public class DBContext implements IContext{
+public class DBContext implements IContext {
 	Fixture fixture;
 	Connection connection;
-	
-	public DBContext(Fixture f, Connection c){
+
+	public DBContext(Fixture f, Connection c) {
 		this.fixture = f;
 		this.connection = c;
 	}
-	
-	
+
 	@Override
 	public void close() {
 		if (connection != null) {
@@ -25,8 +24,8 @@ public class DBContext implements IContext{
 			}
 		}
 	}
-	
-	public Connection getConnection(){
+
+	public Connection getConnection() {
 		return this.connection;
 	}
 
