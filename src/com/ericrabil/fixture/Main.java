@@ -2,8 +2,12 @@ package com.ericrabil.fixture;
 
 import com.ericrabil.fixture.api.Usage;
 
-public class Main {
-	public static void main(String[] args) {
-		Fixture fixture = new Fixture(Usage.PERSONAL);
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class Main extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		Fixture fixture = new Fixture(Usage.PERSONAL, primaryStage);
 	}
 }

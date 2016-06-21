@@ -11,13 +11,19 @@ import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
 import com.ericrabil.fixture.database.db.DBContextFactory;
+import com.ericrabil.fixture.gui.GuiLaunch;
 
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import net.sourceforge.yamlbeans.YamlException;
 import net.sourceforge.yamlbeans.YamlReader;
 import net.sourceforge.yamlbeans.YamlWriter;
 
 public class Fixture {
 	private String name = "Fixture";
+	
+	private Stage window;
+	
 	private String version = "1.0.0";
 	private Releases type = Releases.ALPHA;
 	private String description = "Fixture is a program used for data storage and organization.";
@@ -31,7 +37,7 @@ public class Fixture {
 
 	private Usage use;
 
-	public Fixture(Usage use) {
+	public Fixture(Usage use, Stage stage) {
 		System.out.println("Initializing " + name + " " + version + " " + type.toString().toLowerCase());
 		this.use = use;
 		this.startTime = (int) System.currentTimeMillis();
@@ -58,11 +64,18 @@ public class Fixture {
 				System.out.println("SQL config is properly formatted; proceeding");
 				this.dbConfig = conf;
 			}
+			window = stage;
 			dbReader.close();
-			this.ctfact = new DBContextFactory(this);
+			this.ctfact = new DBContextFactory(this, this.dbConfig);
+			GuiLaunch launch = new GuiLaunch(this);
+			Scene launchscene = launch.drawLaunch();
 		} catch (YamlException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Stage getStage(){
+		return this.window;
 	}
 
 	public void onDisable() {

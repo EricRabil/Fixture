@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import com.ericrabil.fixture.Fixture;
+import com.ericrabil.fixture.api.config.DBConfig;
 import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
@@ -16,7 +17,7 @@ public class DBContextFactory implements IContextFactory {
 	private Map<String, LoggingConnection.LogEntry> queryLog;
 	private Fixture fixture;
 
-	public DBContextFactory(Fixture instance) {
+	public DBContextFactory(Fixture instance, DBConfig config) {
 		queryLog = new HashMap<>();
 
 		String driver = "com.mysql.jdbc.Driver";
@@ -30,9 +31,9 @@ public class DBContextFactory implements IContextFactory {
 		} catch (InstantiationException ex) {
 			throw new RuntimeException(ex);
 		}
-		String user = fixture.getDBConfig().db_user;
-		String password = fixture.getDBConfig().db_pass;
-		String url = fixture.getDBConfig().db_ip;
+		String user = config.db_user;
+		String password = config.db_pass;
+		String url = config.db_ip;
 
 		ds = new BasicDataSource();
 		ds.setDriverClassName(driver);
