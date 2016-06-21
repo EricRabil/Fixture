@@ -1,9 +1,12 @@
 package com.ericrabil.fixture;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.ericrabil.fixture.api.GuiInfoData;
+import com.ericrabil.fixture.api.InfoType;
 import com.ericrabil.fixture.api.Releases;
 import com.ericrabil.fixture.api.Usage;
 import com.ericrabil.fixture.api.config.DBConfig;
@@ -11,9 +14,10 @@ import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
 import com.ericrabil.fixture.database.db.DBContextFactory;
+import com.ericrabil.fixture.gui.GuiInfo;
 import com.ericrabil.fixture.gui.GuiLaunch;
 
-import javafx.scene.Scene;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.sourceforge.yamlbeans.YamlException;
 import net.sourceforge.yamlbeans.YamlReader;
@@ -38,40 +42,55 @@ public class Fixture {
 	private Usage use;
 
 	public Fixture(Usage use, Stage stage) {
+		boolean skip = false;
+		window = stage;
 		System.out.println("Initializing " + name + " " + version + " " + type.toString().toLowerCase());
 		this.use = use;
 		this.startTime = (int) System.currentTimeMillis();
 		try {
 			System.out.println("Instantiating file reader");
-			YamlReader dbReader = new YamlReader(new FileReader("db.yml"));
+			YamlReader dbReader;
+			try{
+			dbReader = new YamlReader(new FileReader("db.yml"));
+			}catch(FileNotFoundException e){
+			new FileWriter("db.yml");
+			dbReader = new YamlReader(new FileReader("db.yml"));
+			}
 			System.out.println("Reading SQL config");
 			DBConfig conf = dbReader.read(DBConfig.class);
 			if (conf == null || conf.anythingMissing()) {
-				System.out.println("The SQL configuration was invalid; Fixture.yml will be overwritten");
+				Text txt = new Text("The SQL configuration was missing or invalid; db.yml will be overwritten. Please reconfigure db.yml and restart Fixture.");
+				txt.setWrappingWidth(500);
+				GuiInfoData data = new GuiInfoData("Fixture DB", txt, InfoType.ERR, 23);
+				GuiInfo info = new GuiInfo(this, data);
+				skip = true;
+				//System.out.println("The SQL configuration was invalid; Fixture.yml will be overwritten");
 				YamlWriter writer = new YamlWriter(new FileWriter("db.yml"));
 				DBConfig sample = new DBConfig();
 				sample.db_collation = "utf8";
 				sample.db_ip = "0.0.0.0";
 				sample.db_name = "fixture";
-				sample.db_pass = "fixpass";
 				sample.db_port = "3306";
+				sample.db_pass = "enter_when_running_fixture";
 				sample.db_user = "fixuser";
 				writer.write(sample);
 				writer.close();
 				System.out.println("Please reconfigure Fixture DB and try again.");
-				System.exit(23);
 			} else {
 				System.out.println("SQL config is properly formatted; proceeding");
+				conf.db_pass = "";
 				this.dbConfig = conf;
 			}
-			window = stage;
+			if(!skip){
 			dbReader.close();
-			this.ctfact = new DBContextFactory(this, this.dbConfig);
 			GuiLaunch launch = new GuiLaunch(this);
-			Scene launchscene = launch.drawLaunch();
+			}
 		} catch (YamlException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public void connectToDB(){
+		this.ctfact = new DBContextFactory(this, this.dbConfig);
 	}
 	
 	public Stage getStage(){
