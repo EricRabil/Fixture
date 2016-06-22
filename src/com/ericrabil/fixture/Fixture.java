@@ -30,7 +30,7 @@ public class Fixture {
 	
 	private Stage window;
 	
-	private String version = "1.0.0";
+	private String version = "1.0.1";
 	private Releases type = Releases.ALPHA;
 	private String description = "Fixture is a program used for data storage and organization.";
 
@@ -73,7 +73,7 @@ public class Fixture {
 				YamlWriter writer = new YamlWriter(new FileWriter("db.yml"));
 				DBConfig sample = new DBConfig();
 				sample.db_collation = "utf8";
-				sample.db_ip = "jdbc:mysql://127.0.0.1:3306/tregmine_test?autoReconnect=true";
+				sample.db_ip = "jdbc:mysql://127.0.0.1:3306/fixture?autoReconnect=true";
 				sample.db_pass = "enter_when_running_fixture";
 				sample.db_user = "fixuser";
 				writer.write(sample);
@@ -83,6 +83,7 @@ public class Fixture {
 				System.out.println("SQL config is properly formatted; proceeding");
 				conf.db_pass = "";
 				this.dbConfig = conf;
+				System.out.println(this.dbConfig.db_user);
 			}
 			if(!skip){
 			dbReader.close();
@@ -101,9 +102,10 @@ public class Fixture {
 			return true;
 		} catch (DAOException e) {
 			GuiInfoData data = new GuiInfoData("Failed to connect", new Text(e.toString()), InfoType.ERR);
+			data.setQuitCode(142);
 			GuiDialog dialog = new GuiDialog(data, true);
 			e.printStackTrace();
-			System.exit(413);
+			//System.exit(413);
 			return false;
 		}
 	}
@@ -130,7 +132,8 @@ public class Fixture {
 	}
 
 	public void onDisable() {
-
+		this.window.hide();
+		System.out.println("Good-bye!");
 	}
 
 	public IContext createContext() throws DAOException {

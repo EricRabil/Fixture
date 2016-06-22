@@ -42,6 +42,11 @@ public class GuiInfoData {
 	public Text getMessage(){
 		return this.message;
 	}
+	
+	public boolean hasQuitCode(){
+		return this.quitCode != -999;
+	}
+	
 	public InfoType getType(){
 		return this.type;
 	}

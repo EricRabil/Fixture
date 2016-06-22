@@ -37,7 +37,6 @@ public class DBContextFactory implements IContextFactory {
 		String user = config.db_user;
 		String password = config.db_pass;
 		String url = config.db_ip;
-
 		ds = new BasicDataSource();
 		ds.setDriverClassName(driver);
 		ds.setUrl(url);

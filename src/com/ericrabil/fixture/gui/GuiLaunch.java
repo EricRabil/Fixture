@@ -34,7 +34,7 @@ public class GuiLaunch {
 	
 	public void drawLaunch(){
 		Label title = new Label("Fixture Database Viewer");
-        title.setFont(new Font("System", 24));
+        title.setFont(new Font("System", 34));
         PasswordField field = new PasswordField();
         field.setPromptText("Please enter the password for " + this.fixture.getDBConfig().db_user);
         field.setMaxWidth(220);
@@ -43,8 +43,8 @@ public class GuiLaunch {
         start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	db_pass = field.getText();
-            	fixture.getDBConfig().db_pass = db_pass;
+            	//db_pass = field.getText();
+            	fixture.getDBConfig().db_pass = field.getText();
             	stage.setScene(null);
             	if(fixture.connectToDB()){
             		fixture.postConnection();
