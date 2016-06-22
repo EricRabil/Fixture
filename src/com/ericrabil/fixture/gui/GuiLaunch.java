@@ -1,6 +1,8 @@
 package com.ericrabil.fixture.gui;
 
 import com.ericrabil.fixture.Fixture;
+import com.ericrabil.fixture.api.GuiInfoData;
+import com.ericrabil.fixture.api.InfoType;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class GuiLaunch {
@@ -32,7 +35,7 @@ public class GuiLaunch {
 	public void drawLaunch(){
 		Label title = new Label("Fixture Database Viewer");
         title.setFont(new Font("System", 24));
-        TextField field = new TextField("Enter the password for " + this.fixture.getDBConfig().db_user + "@" + this.fixture.getDBConfig().db_ip);
+        TextField field = new TextField("Password for " + this.fixture.getDBConfig().db_user + "@" + this.fixture.getDBConfig().db_ip);
         field.setMaxWidth(220);
         
         Button start = new Button("Launch");
@@ -41,6 +44,14 @@ public class GuiLaunch {
             public void handle(ActionEvent event) {
             	db_pass = field.getText();
             	fixture.getDBConfig().db_pass = db_pass;
+            	stage.setScene(null);
+            	if(fixture.connectToDB() == false){
+            		Text txt = new Text("Connection to " + fixture.getDBConfig().db_ip + " with the username " + fixture.getDBConfig().db_user + " failed. Please check the spelling and try again.");
+            		txt.setWrappingWidth(500);
+            		GuiInfoData data = new GuiInfoData("Connection failed!", txt, InfoType.ERR);
+            		GuiInfo alert = new GuiInfo(fixture, data);
+            		
+            	}
             }
         });
         VBox hBoxCombo = new VBox(8, title, start, field);

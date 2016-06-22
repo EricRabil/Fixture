@@ -68,9 +68,7 @@ public class Fixture {
 				YamlWriter writer = new YamlWriter(new FileWriter("db.yml"));
 				DBConfig sample = new DBConfig();
 				sample.db_collation = "utf8";
-				sample.db_ip = "0.0.0.0";
-				sample.db_name = "fixture";
-				sample.db_port = "3306";
+				sample.db_ip = "jdbc:mysql://127.0.0.1:3306/tregmine_test?autoReconnect=true";
 				sample.db_pass = "enter_when_running_fixture";
 				sample.db_user = "fixuser";
 				writer.write(sample);
@@ -89,8 +87,15 @@ public class Fixture {
 			e.printStackTrace();
 		}
 	}
-	public void connectToDB(){
+	public boolean connectToDB(){
 		this.ctfact = new DBContextFactory(this, this.dbConfig);
+		try {
+			this.ctfact.createContext();
+			return true;
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public Stage getStage(){

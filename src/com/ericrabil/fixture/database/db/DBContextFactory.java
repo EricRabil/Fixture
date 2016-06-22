@@ -1,5 +1,8 @@
 package com.ericrabil.fixture.database.db;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +24,7 @@ public class DBContextFactory implements IContextFactory {
 		queryLog = new HashMap<>();
 
 		String driver = "com.mysql.jdbc.Driver";
-
+		
 		try {
 			Class.forName(driver).newInstance();
 		} catch (ClassNotFoundException ex) {
@@ -38,6 +41,8 @@ public class DBContextFactory implements IContextFactory {
 		ds = new BasicDataSource();
 		ds.setDriverClassName(driver);
 		ds.setUrl(url);
+		System.out.println(url);
+		System.out.println("'" + user + "':" + "'" + password + "'");
 		ds.setUsername(user);
 		ds.setPassword(password);
 		ds.setMaxActive(5);
@@ -49,8 +54,18 @@ public class DBContextFactory implements IContextFactory {
 
 	@Override
 	public IContext createContext() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			// It's the responsibility of the context to make sure that the
+			// connection is correctly closed
+			Connection conn = ds.getConnection();
+			try (Statement stmt = conn.createStatement()) {
+				stmt.execute("SET NAMES latin1");
+			}
+
+			return new DBContext(this.fixture, new LoggingConnection(conn, queryLog));
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
 	}
 
 }
