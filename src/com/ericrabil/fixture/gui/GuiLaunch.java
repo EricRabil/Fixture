@@ -10,7 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -35,7 +35,8 @@ public class GuiLaunch {
 	public void drawLaunch(){
 		Label title = new Label("Fixture Database Viewer");
         title.setFont(new Font("System", 24));
-        TextField field = new TextField("Password for " + this.fixture.getDBConfig().db_user + "@" + this.fixture.getDBConfig().db_ip);
+        PasswordField field = new PasswordField();
+        field.setPromptText("Please enter the password for " + this.fixture.getDBConfig().db_user);
         field.setMaxWidth(220);
         
         Button start = new Button("Launch");
@@ -45,12 +46,9 @@ public class GuiLaunch {
             	db_pass = field.getText();
             	fixture.getDBConfig().db_pass = db_pass;
             	stage.setScene(null);
-            	if(fixture.connectToDB() == false){
-            		Text txt = new Text("Connection to " + fixture.getDBConfig().db_ip + " with the username " + fixture.getDBConfig().db_user + " failed. Please check the spelling and try again.");
-            		txt.setWrappingWidth(500);
-            		GuiInfoData data = new GuiInfoData("Connection failed!", txt, InfoType.ERR);
-            		GuiInfo alert = new GuiInfo(fixture, data);
-            		
+            	if(fixture.connectToDB()){
+            		fixture.postConnection();
+            		fixture.handleWrite();
             	}
             }
         });

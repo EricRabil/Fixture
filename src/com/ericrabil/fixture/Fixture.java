@@ -14,6 +14,8 @@ import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
 import com.ericrabil.fixture.database.db.DBContextFactory;
+import com.ericrabil.fixture.database.db.DBLoginDAO;
+import com.ericrabil.fixture.gui.GuiDialog;
 import com.ericrabil.fixture.gui.GuiInfo;
 import com.ericrabil.fixture.gui.GuiLaunch;
 
@@ -33,6 +35,8 @@ public class Fixture {
 	private String description = "Fixture is a program used for data storage and organization.";
 
 	private DBConfig dbConfig;
+	
+	private boolean canWrite;
 
 	// In Milliseconds
 	private int startTime;
@@ -42,6 +46,7 @@ public class Fixture {
 	private Usage use;
 
 	public Fixture(Usage use, Stage stage) {
+		
 		boolean skip = false;
 		window = stage;
 		System.out.println("Initializing " + name + " " + version + " " + type.toString().toLowerCase());
@@ -53,7 +58,7 @@ public class Fixture {
 			try{
 			dbReader = new YamlReader(new FileReader("db.yml"));
 			}catch(FileNotFoundException e){
-			new FileWriter("db.yml");
+			new FileWriter("db.yml").close();
 			dbReader = new YamlReader(new FileReader("db.yml"));
 			}
 			System.out.println("Reading SQL config");
@@ -86,15 +91,37 @@ public class Fixture {
 		} catch (YamlException | IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	public boolean connectToDB(){
+		
 		this.ctfact = new DBContextFactory(this, this.dbConfig);
 		try {
 			this.ctfact.createContext();
 			return true;
 		} catch (DAOException e) {
+			GuiInfoData data = new GuiInfoData("Failed to connect", new Text(e.toString()), InfoType.ERR);
+			GuiDialog dialog = new GuiDialog(data, true);
 			e.printStackTrace();
+			System.exit(413);
 			return false;
+		}
+	}
+	
+	public void postConnection(){
+		try(IContext ctx = this.createContext()){
+			DBLoginDAO login = ctx.getLoginDAO();
+			this.canWrite = login.writePermissions();
+		} catch (DAOException e) {
+			this.canWrite = false;
+			e.printStackTrace();
+		}
+	}
+	
+	public void handleWrite(){
+		if(!this.canWrite){
+			GuiInfoData data = new GuiInfoData("No Write Permission", new Text("Fixture will be in read-only mode during this session because the account you connected with does not have write access."), InfoType.WARN);
+			GuiDialog dialog = new GuiDialog(data, true);
 		}
 	}
 	

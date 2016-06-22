@@ -41,14 +41,11 @@ public class DBContextFactory implements IContextFactory {
 		ds = new BasicDataSource();
 		ds.setDriverClassName(driver);
 		ds.setUrl(url);
-		System.out.println(url);
-		System.out.println("'" + user + "':" + "'" + password + "'");
 		ds.setUsername(user);
 		ds.setPassword(password);
 		ds.setMaxActive(5);
 		ds.setMaxIdle(5);
 		ds.setDefaultAutoCommit(true);
-
 		this.fixture = instance;
 	}
 
@@ -57,6 +54,7 @@ public class DBContextFactory implements IContextFactory {
 		try {
 			// It's the responsibility of the context to make sure that the
 			// connection is correctly closed
+			// System.out.println(ds.toString());
 			Connection conn = ds.getConnection();
 			try (Statement stmt = conn.createStatement()) {
 				stmt.execute("SET NAMES latin1");

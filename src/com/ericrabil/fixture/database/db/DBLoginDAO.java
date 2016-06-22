@@ -1,6 +1,9 @@
 package com.ericrabil.fixture.database.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.database.DAOException;
@@ -17,8 +20,15 @@ public class DBLoginDAO implements ILoginDAO{
 
 	@Override
 	public boolean writePermissions() throws DAOException {
-		String stmt = "INSERT INTO `logins`(`username`, `ip`) VALUES ('" + this.f.getDBConfig().db_user + "', )";
-		return false;
+		String sql = "INSERT INTO `logins`(`username`, `ip`) VALUES (?, 'n/a')";
+		
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, this.f.getDBConfig().db_user);
+			stmt.execute();
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 }

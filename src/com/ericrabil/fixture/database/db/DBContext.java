@@ -29,4 +29,9 @@ public class DBContext implements IContext {
 		return this.connection;
 	}
 
+	@Override
+	public DBLoginDAO getLoginDAO() {
+		return new DBLoginDAO(this.fixture, this.connection);
+	}
+
 }

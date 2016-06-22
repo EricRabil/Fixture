@@ -6,6 +6,10 @@ public class GuiInfoData {
 	private String title;
 	private Text message;
 	private InfoType type;
+	
+	private String header = null;
+	private boolean hasHeader = false;
+	
 	private int quitCode = -999;
 	
 	public GuiInfoData(){
@@ -47,6 +51,20 @@ public class GuiInfoData {
 	public void setTitle(String t){
 		this.title = t;
 	}
+	
+	public void addHeader(String x){
+		this.header = x;
+		this.hasHeader = true;
+	}
+	
+	public boolean hasHeader(){
+		return this.hasHeader;
+	}
+	
+	public String getHeader(){
+		return this.header;
+	}
+	
 	public void setMessage(Text m){
 		this.message = m;
 	}
