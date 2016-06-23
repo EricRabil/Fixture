@@ -14,12 +14,27 @@ import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.IContextFactory;
 
+// TODO: Auto-generated Javadoc
+/**
+ * A factory for creating DBContext objects.
+ */
 public class DBContextFactory implements IContextFactory {
 
+	/** The ds. */
 	private BasicDataSource ds;
+	
+	/** The query log. */
 	private Map<String, LoggingConnection.LogEntry> queryLog;
+	
+	/** The fixture. */
 	private Fixture fixture;
 
+	/**
+	 * Instantiates a new DB context factory.
+	 *
+	 * @param instance the instance
+	 * @param config the config
+	 */
 	public DBContextFactory(Fixture instance, DBConfig config) {
 		queryLog = new HashMap<>();
 
@@ -48,6 +63,9 @@ public class DBContextFactory implements IContextFactory {
 		this.fixture = instance;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ericrabil.fixture.database.IContextFactory#createContext()
+	 */
 	@Override
 	public IContext createContext() throws DAOException {
 		try {

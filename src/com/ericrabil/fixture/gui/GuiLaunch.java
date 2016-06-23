@@ -1,8 +1,6 @@
 package com.ericrabil.fixture.gui;
 
 import com.ericrabil.fixture.Fixture;
-import com.ericrabil.fixture.api.GuiInfoData;
-import com.ericrabil.fixture.api.InfoType;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,18 +9,35 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class GuiLaunch.
+ */
 public class GuiLaunch {
+	
+	/** The launchscreen. */
 	private Scene launchscreen;
+	
+	/** The stage. */
 	private Stage stage;
+	
+	/** The fixture. */
 	private Fixture fixture;
+	
+	/** The db pass. */
 	private String db_pass;
 	
+	/**
+	 * Instantiates a new gui launch.
+	 *
+	 * @param fixture provides the instance with data such as DB config and the stage.
+	 */
 	public GuiLaunch(Fixture fixture){
 		this.fixture = fixture;
 		this.stage = this.fixture.getStage();
@@ -32,27 +47,35 @@ public class GuiLaunch {
         this.stage.show();
 	}
 	
+	/**
+	 * Draw launch.
+	 */
 	public void drawLaunch(){
 		Label title = new Label("Fixture Database Viewer");
         title.setFont(new Font("System", 34));
-        PasswordField field = new PasswordField();
-        field.setPromptText("Please enter the password for " + this.fixture.getDBConfig().db_user);
+        TextField field = new TextField();
+        field.setPromptText("Username");
         field.setMaxWidth(220);
+        PasswordField field2 = new PasswordField();
+        field2.setPromptText("Password");
+        field2.setMaxWidth(220);
         
         Button start = new Button("Launch");
         start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	//db_pass = field.getText();
-            	fixture.getDBConfig().db_pass = field.getText();
+            	fixture.getDBConfig().db_user = field.getText();
+            	fixture.getDBConfig().db_pass = field2.getText();
             	stage.setScene(null);
             	if(fixture.connectToDB()){
             		fixture.postConnection();
             		fixture.handleWrite();
+            		fixture.runMain();
             	}
             }
         });
-        VBox hBoxCombo = new VBox(8, title, start, field);
+        VBox hBoxCombo = new VBox(8, title, start, field, field2);
         hBoxCombo.setAlignment(Pos.CENTER);
         StackPane stacked = new StackPane(hBoxCombo);
         launchscreen = new Scene(stacked, 512, 512);

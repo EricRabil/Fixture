@@ -1,5 +1,13 @@
 package com.ericrabil.fixture.api;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Enum Usage.
+ */
 public enum Usage {
-	PERSONAL, BUSINESS
+	
+	/** The personal. */
+	PERSONAL, 
+ /** The business. */
+ BUSINESS
 }

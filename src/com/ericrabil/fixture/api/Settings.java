@@ -1,5 +1,15 @@
 package com.ericrabil.fixture.api;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Enum Settings.
+ */
 public enum Settings {
-	VERBOSE, ADVANCED, DEBUG
+	
+	/** The verbose. */
+	VERBOSE, 
+ /** The advanced. */
+ ADVANCED, 
+ /** The debug. */
+ DEBUG
 }

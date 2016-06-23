@@ -13,13 +13,30 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class GuiInfo.
+ */
 public class GuiInfo{
 	
+	/** The infoscreen. */
 	private Scene infoscreen;
+	
+	/** The stage. */
 	private Stage stage;
+	
+	/** The fixture. */
 	private Fixture fixture;
+	
+	/** The data. */
 	private GuiInfoData data;
 	
+	/**
+	 * Instantiates a new gui info.
+	 *
+	 * @param f the f
+	 * @param d the d
+	 */
 	public GuiInfo(Fixture f, GuiInfoData d){
 		this.fixture = f;
 		this.stage = this.fixture.getStage();
@@ -30,6 +47,9 @@ public class GuiInfo{
 		this.stage.show();
 	}
 	
+	/**
+	 * Draw info.
+	 */
 	public void drawInfo(){
 		Button ok = new Button("Ok");
 		ok.setOnAction((new EventHandler<ActionEvent>() {
