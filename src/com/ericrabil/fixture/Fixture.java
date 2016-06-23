@@ -55,6 +55,8 @@ public class Fixture {
 	
 	/** The can write. */
 	private boolean canWrite;
+	
+	private boolean missingTable;
 
 	/** The start time. */
 	// In Milliseconds
@@ -177,11 +179,19 @@ public class Fixture {
 		}
 	}
 	
+	public void missingTableDialog(){
+		this.missingTable =true;
+		GuiInfoData data = new GuiInfoData("Database isn't setup.", new Text("Fixture is missing a table that is required for normal operation. Please re-configure the database and try agian."), InfoType.WARN);
+		data.addHeader(this.lgdao.getException().getMessage());
+		data.setQuitCode(43);
+		GuiDialog dialog = new GuiDialog(data, true);
+	}
+	
 	/**
 	 * Handle write.
 	 */
 	public void handleWrite(){
-		if(!this.canWrite){
+		if(!this.canWrite && !this.missingTable){
 			GuiInfoData data = new GuiInfoData("No Write Permission", new Text("Fixture will be in read-only mode during this session because the account you connected with does not have write access."), InfoType.WARN);
 			data.addHeader(this.lgdao.getException().getMessage());
 			GuiDialog dialog = new GuiDialog(data, true);
