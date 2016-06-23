@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -59,6 +61,22 @@ public class GuiLaunch {
         PasswordField field2 = new PasswordField();
         field2.setPromptText("Password");
         field2.setMaxWidth(220);
+        field2.setOnKeyPressed(new EventHandler<KeyEvent>(){
+
+			@Override
+			public void handle(KeyEvent arg0) {
+				if(arg0.getCode().equals(KeyCode.ENTER)){
+					fixture.getDBConfig().db_user = field.getText();
+	            	fixture.getDBConfig().db_pass = field2.getText();
+	            	stage.setScene(null);
+	            	if(fixture.connectToDB()){
+	            		fixture.postConnection();
+	            		fixture.handleWrite();
+	            		fixture.runMain();
+	            	}
+				}
+			}
+        });
         
         Button start = new Button("Launch");
         start.setOnAction(new EventHandler<ActionEvent>() {
@@ -75,7 +93,7 @@ public class GuiLaunch {
             	}
             }
         });
-        VBox hBoxCombo = new VBox(8, title, start, field, field2);
+        VBox hBoxCombo = new VBox(8, title, field, field2, start);
         hBoxCombo.setAlignment(Pos.CENTER);
         StackPane stacked = new StackPane(hBoxCombo);
         launchscreen = new Scene(stacked, 512, 512);
