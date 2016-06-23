@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.2
+-- version 4.5.1
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Jun 23, 2016 at 01:32 PM
+-- Host: 127.0.0.1
+-- Generation Time: Jun 23, 2016 at 08:57 PM
 -- Server version: 10.1.13-MariaDB
--- PHP Version: 5.5.35
+-- PHP Version: 5.6.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -74,7 +74,8 @@ INSERT INTO `logins` (`username`, `ip`, `time`) VALUES
 ('fixture', 'n/a', '2016-06-23 00:06:26'),
 ('fixture', 'n/a', '2016-06-23 00:06:38'),
 ('fixture', 'n/a', '2016-06-23 00:07:23'),
-('fixture', 'n/a', '2016-06-23 00:08:17');
+('fixture', 'n/a', '2016-06-23 00:08:17'),
+('fixture', 'n/a', '2016-06-23 18:46:21');
 
 -- --------------------------------------------------------
 

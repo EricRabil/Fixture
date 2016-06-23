@@ -126,6 +126,15 @@ public class Fixture {
 		
 	}
 	
+	public void updateDatabases(){
+		try(IContext ctx = this.createContext()){
+			DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
+			this.databases = dbdao.getDatabases();
+		}catch(DAOException e){
+			e.printStackTrace();
+		}
+	}
+	
 	public void runMain(){
 		try(IContext ctx = this.createContext()){
 			DBDatabaseDAO databasedao = ctx.getDatabaseDAO();

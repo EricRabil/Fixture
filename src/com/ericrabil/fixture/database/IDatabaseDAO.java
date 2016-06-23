@@ -10,9 +10,7 @@ public interface IDatabaseDAO {
 	
 	public ArrayList<Database> getDatabases() throws DAOException;
 	
-	public void addEntry(Entry e) throws DAOException;
-	
-	public void removeEntry(int i) throws DAOException;
-	
 	public void removeEntry(Entry e) throws DAOException;
+
+	public void addEntry(String key, String value, Database db) throws DAOException;
 }

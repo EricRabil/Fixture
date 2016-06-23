@@ -3,9 +3,14 @@ package com.ericrabil.fixture.gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.api.Database;
 import com.ericrabil.fixture.api.Entry;
+import com.ericrabil.fixture.database.DAOException;
+import com.ericrabil.fixture.database.IContext;
+import com.ericrabil.fixture.database.db.DBDatabaseDAO;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -60,6 +65,15 @@ public class GuiDBView {
             @Override
             public void handle(ActionEvent event) {
             	
+            	String key = JOptionPane.showInputDialog("What is the variable?", null);
+            	String value = JOptionPane.showInputDialog("What is the value?", null);
+            	try(IContext ctx = f.createContext()){
+            		DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
+            		dbdao.addEntry(key, value, db);
+            		GuiDBView dbview = new GuiDBView(f, db);
+            	}catch(DAOException e){
+            		e.printStackTrace();
+            	}
             }
         });
 		Button edit = new Button("Edit");
@@ -82,5 +96,9 @@ public class GuiDBView {
         hBoxCombo.setAlignment(Pos.CENTER);
         StackPane stacked = new StackPane(hBoxCombo);
         dbscene = new Scene(stacked, 1024, 512);
+	}
+	
+	private void refresh(){
+		
 	}
 }

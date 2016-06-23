@@ -1,10 +1,10 @@
 package com.ericrabil.fixture.gui;
 
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.api.Database;
-
-import javafx.stage.Popup;
-import javafx.stage.PopupBuilder;
 
 public class GuiAdd {
 	
@@ -17,7 +17,6 @@ public class GuiAdd {
 	}
 	
 	private void draw(){
-		Popup pop = PopupBuilder.create().content(contentNode).width(50).height(100).autoFix(true).build();
-		pop.show(stage);
+		
 	}
 }

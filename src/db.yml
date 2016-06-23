@@ -1,0 +1,3 @@
+!com.ericrabil.fixture.api.config.DBConfig
+db_collation: utf8
+db_ip: jdbc:mysql://127.0.0.1:3306/fixture?autoReconnect=true

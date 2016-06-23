@@ -69,16 +69,18 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 	}
 
 	@Override
-	public void addEntry(Entry e) throws DAOException {
-		String key = e.getKey();
-		String value = e.getValue();
-		
-	}
-
-	@Override
-	public void removeEntry(int i) throws DAOException {
-		// TODO Auto-generated method stub
-		
+	public void addEntry(String key, String value, Database db) throws DAOException {
+		String sql = "INSERT INTO `data`(`node`, `db_uuid`, `id`, `val`) VALUES ('" + db.getSQLID() + "', ?, ?, ?)";
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+			stmt.setInt(1, db.getUUID());
+			stmt.setString(2, key);
+			stmt.setString(3, value);
+			stmt.execute();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
