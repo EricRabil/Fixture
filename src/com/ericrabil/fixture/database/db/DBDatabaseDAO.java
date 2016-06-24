@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.api.Database;
 import com.ericrabil.fixture.api.Entry;
+import com.ericrabil.fixture.api.exception.DatabaseExistsException;
 import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IDatabaseDAO;
 
@@ -20,6 +21,20 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 	
 	public DBDatabaseDAO(Fixture fixture, Connection connection){
 		this.conn = connection; this.f = fixture;
+	}
+	
+	@Override
+	public Database createDatabase(String name){
+		String nodename = "dat_" + name.toLowerCase().replace(" ", "_");
+		if(databaseExists(name, nodename)){
+			throw new DatabaseExistsException(name, nodename);
+		}
+		String sql = "INSERT INTO `nodes`(`node`, `nice_name`) VALUES (?,?)";
+		return null;
+	}
+	
+	private boolean databaseExists(String name, String id){
+		return false;
 	}
 	
 	@Override
@@ -76,7 +91,7 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 			stmt.setString(2, key);
 			stmt.setString(3, value);
 			stmt.execute();
-			
+			f.updateDatabases();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,8 +100,28 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 
 	@Override
 	public void removeEntry(Entry e) throws DAOException {
-		// TODO Auto-generated method stub
-		
+		String sql = "DELETE FROM `data` WHERE `uniqueid`=?";
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+			stmt.setInt(1, e.getUUID());
+			stmt.execute();
+			f.updateDatabases();
+		}catch(SQLException ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void updateEntry(Entry e, String key, String value) throws DAOException {
+		String sql = "UPDATE `data` SET `id`=?,`val`=? WHERE uniqueid=?";
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+			stmt.setString(1, key);
+			stmt.setString(2, value);
+			stmt.setInt(3, e.getUUID());
+			stmt.execute();
+			f.updateDatabases();
+		}catch(SQLException ex){
+			ex.printStackTrace();
+		}
 	}
 
 }

@@ -34,6 +34,11 @@ public class GuiDBView {
 	private Scene dbscene;
 	private Stage primaryStage;
 	
+	private ListView<Node> keyList = new ListView<>();
+	private ListView<Node> valList = new ListView<>();
+	private ArrayList<Label> addLabelsKey = new ArrayList<Label>();
+	private ArrayList<Label> addLabelsValue = new ArrayList<Label>();
+	
 	public GuiDBView(Fixture fixture, Database database){
 		this.f = fixture;
 		this.db = database;
@@ -45,11 +50,22 @@ public class GuiDBView {
         this.primaryStage.show();
 	}
 	
+	private void reDraw(){
+		this.addLabelsKey.clear();
+		this.addLabelsValue.clear();
+		this.keyList.getItems().clear();
+		this.valList.getItems().clear();
+		f.updateDatabases();
+		this.db = f.getDatabase(this.db.getUUID());
+		this.draw();
+		this.primaryStage.setScene(dbscene);
+        this.primaryStage.setResizable(false);
+        this.primaryStage.centerOnScreen();
+        this.primaryStage.show();
+	}
+	
 	private void draw(){
-		ListView<Node> keyList = new ListView<>();
-		ListView<Node> valList = new ListView<>();
-		ArrayList<Label> addLabelsKey = new ArrayList<Label>();
-		ArrayList<Label> addLabelsValue = new ArrayList<Label>();
+		
 		for(Entry e : this.db.getEntries()){
 			Label l = new Label(e.getKey());
 			this.entryMap.put(l, e);
@@ -70,7 +86,7 @@ public class GuiDBView {
             	try(IContext ctx = f.createContext()){
             		DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
             		dbdao.addEntry(key, value, db);
-            		GuiDBView dbview = new GuiDBView(f, db);
+            		reDraw();
             	}catch(DAOException e){
             		e.printStackTrace();
             	}
@@ -80,25 +96,66 @@ public class GuiDBView {
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+            	//keyList.getSelectionModel().getSelectedItem()
+            	try{
+            	Label lbl = (Label) keyList.getSelectionModel().getSelectedItem();
+            	Label lbl2 = (Label) keyList.getSelectionModel().getSelectedItem();
+            	Entry ent = entryMap.get(lbl);
+            	String key = JOptionPane.showInputDialog("What is the variable?", ent.getKey());
+            	String value = JOptionPane.showInputDialog("What is the value?", ent.getValue());
+            	try(IContext ctx = f.createContext()){
+            		DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
+            		dbdao.updateEntry(ent, key, value);
+            		reDraw();
+            	}catch(DAOException e){
+            		e.printStackTrace();
+            	}
+            	}catch(NullPointerException ex){
+            		//Do nothing because edit was clicked without highlighting entry
+            	}
             }
         });
         Button delete = new Button("Delete");
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+            	
+            		if(keyList.getSelectionModel().getSelectedItem() == null){
+            			
+            		}else{
+            			try{
+            	Label lbl = (Label) keyList.getSelectionModel().getSelectedItem();
+            	Entry ent = entryMap.get(lbl);
+            	String key = JOptionPane.showInputDialog("Please type CONFIRM to delete the entry", null);
+            	if(key.toLowerCase().contains("confirm")){
+            		try(IContext ctx = f.createContext()){
+            			DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
+            			dbdao.removeEntry(ent);
+            			reDraw();
+            		}catch(DAOException e){
+            			e.printStackTrace();
+            		}
+            	}
+            	}catch(NullPointerException e){
+            		//Do nothing because delete was clicked without higlighting entry
+            	}
+            	}
+            }
+        });
+        Button refresh = new Button("Refresh");
+        refresh.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+        		reDraw();
             }
         });
         HBox list = new HBox(8, keyList, valList);
         list.setAlignment(Pos.CENTER);
-        HBox options = new HBox(8, add, edit, delete);
+        HBox options = new HBox(8, add, edit, delete, refresh);
         options.setAlignment(Pos.CENTER);
         VBox hBoxCombo = new VBox(8, list, options);
         hBoxCombo.setAlignment(Pos.CENTER);
         StackPane stacked = new StackPane(hBoxCombo);
         dbscene = new Scene(stacked, 1024, 512);
-	}
-	
-	private void refresh(){
-		
 	}
 }

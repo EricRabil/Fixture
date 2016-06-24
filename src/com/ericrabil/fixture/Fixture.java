@@ -5,8 +5,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ericrabil.fixture.api.Database;
+import com.ericrabil.fixture.api.Entry;
 import com.ericrabil.fixture.api.GuiInfoData;
 import com.ericrabil.fixture.api.InfoType;
 import com.ericrabil.fixture.api.Releases;
@@ -52,6 +54,8 @@ public class Fixture {
 
 	/** The db config. */
 	private DBConfig dbConfig;
+	
+	private HashMap<Integer, Database> dbMap = new HashMap<Integer, Database>();
 	
 	/** The can write. */
 	private boolean canWrite;
@@ -130,9 +134,17 @@ public class Fixture {
 		try(IContext ctx = this.createContext()){
 			DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
 			this.databases = dbdao.getDatabases();
+			this.dbMap.clear();
+			for(Database db : this.databases){
+				this.dbMap.put(db.getUUID(), db);
+			}
 		}catch(DAOException e){
 			e.printStackTrace();
 		}
+	}
+	
+	public Database getDatabase(int uuid){
+		return this.dbMap.get(uuid);
 	}
 	
 	public void runMain(){

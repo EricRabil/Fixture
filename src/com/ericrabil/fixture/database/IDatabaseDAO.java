@@ -13,4 +13,8 @@ public interface IDatabaseDAO {
 	public void removeEntry(Entry e) throws DAOException;
 
 	public void addEntry(String key, String value, Database db) throws DAOException;
+
+	public void updateEntry(Entry e, String key, String value) throws DAOException;
+
+	public Database createDatabase(String name);
 }
