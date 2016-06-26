@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.api.Database;
 import com.ericrabil.fixture.api.Entry;
 import com.ericrabil.fixture.api.exception.DatabaseExistsException;
+import com.ericrabil.fixture.api.exception.UUIDSecurityException;
 import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IDatabaseDAO;
 
@@ -24,16 +26,54 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 	}
 	
 	@Override
-	public Database createDatabase(String name){
+	public Database createDatabase(String name) throws DatabaseExistsException{
 		String nodename = "dat_" + name.toLowerCase().replace(" ", "_");
 		if(databaseExists(name, nodename)){
-			throw new DatabaseExistsException(name, nodename);
+			throw new DatabaseExistsException("A database with that name or unique name already exists.");
 		}
-		String sql = "INSERT INTO `nodes`(`node`, `nice_name`) VALUES (?,?)";
-		return null;
+		String sql = "INSERT INTO `nodes`(`uuid`, `node`, `nice_name`) VALUES (?,?,?)";
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+			stmt.setString(1, UUID.randomUUID().toString());
+			stmt.setString(2, nodename);
+			stmt.setString(3, name);
+			stmt.execute();
+			Database db = new Database(f, nodename, name, null, null);
+			sql = "SELECT * FROM `nodes` WHERE node = ?";
+			try(PreparedStatement stmt1 = conn.prepareStatement(sql)){
+				stmt1.setString(1, nodename);
+				stmt1.execute();
+				try(ResultSet rs = stmt.getResultSet()){
+					while(rs.next()){
+						try {
+							db.setUUID(UUID.fromString(rs.getString("")));
+						} catch (UUIDSecurityException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return db;
+		}catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private boolean databaseExists(String name, String id){
+		String sql = "SELECT * FROM `nodes` WHERE node = ? OR nice_name = ?";
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+			stmt.setString(1, id);
+			stmt.setString(2, name);
+			stmt.execute();
+			try(ResultSet rs = stmt.getResultSet()){
+				while(rs.next()){
+					return true;
+				}
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+			return true;
+		}
 		return false;
 	}
 	
@@ -49,7 +89,7 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 
 			try (ResultSet rs = stmt.getResultSet()) {
 				while (rs.next()) {
-					entries.add(new Entry(rs.getString("id"), rs.getString("val"), rs.getInt("uniqueid"), rs.getInt("db_uuid")));
+					entries.add(new Entry(rs.getString("id"), rs.getString("val"), UUID.fromString(rs.getString("uuid")), rs.getInt("db_uuid")));
 				}
 			}
 		} catch (SQLException e) {
@@ -70,7 +110,7 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 
 			try (ResultSet rs = stmt.getResultSet()) {
 				while (rs.next()) {
-					Database db = new Database(this.f, rs.getString("node"), rs.getString("nice_name"), null, rs.getInt("identifier"));
+					Database db = new Database(this.f, rs.getString("node"), rs.getString("nice_name"), null, rs.getString("uuid"));
 					db.setEntries(getEntries(db));
 					dbs.add(db);
 				}
@@ -85,11 +125,12 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 
 	@Override
 	public void addEntry(String key, String value, Database db) throws DAOException {
-		String sql = "INSERT INTO `data`(`node`, `db_uuid`, `id`, `val`) VALUES ('" + db.getSQLID() + "', ?, ?, ?)";
+		String sql = "INSERT INTO `data`(`node`, `uuid`, `db_uuid`, `id`, `val`) VALUES ('" + db.getSQLID() + "', ?, ?, ?, ?)";
 		try(PreparedStatement stmt = conn.prepareStatement(sql)){
-			stmt.setInt(1, db.getUUID());
-			stmt.setString(2, key);
-			stmt.setString(3, value);
+			stmt.setString(1, UUID.randomUUID().toString());
+			stmt.setString(2, db.getUUID().toString());
+			stmt.setString(3, key);
+			stmt.setString(4, value);
 			stmt.execute();
 			f.updateDatabases();
 		} catch (SQLException e) {
@@ -100,9 +141,9 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 
 	@Override
 	public void removeEntry(Entry e) throws DAOException {
-		String sql = "DELETE FROM `data` WHERE `uniqueid`=?";
+		String sql = "DELETE FROM `data` WHERE `uuid`=?";
 		try(PreparedStatement stmt = conn.prepareStatement(sql)){
-			stmt.setInt(1, e.getUUID());
+			stmt.setString(1, e.getUUID().toString());
 			stmt.execute();
 			f.updateDatabases();
 		}catch(SQLException ex){
@@ -116,7 +157,7 @@ public class DBDatabaseDAO implements IDatabaseDAO{
 		try(PreparedStatement stmt = conn.prepareStatement(sql)){
 			stmt.setString(1, key);
 			stmt.setString(2, value);
-			stmt.setInt(3, e.getUUID());
+			stmt.setString(3, e.getUUID().toString());
 			stmt.execute();
 			f.updateDatabases();
 		}catch(SQLException ex){

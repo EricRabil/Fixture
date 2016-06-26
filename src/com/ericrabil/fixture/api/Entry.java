@@ -1,14 +1,18 @@
 package com.ericrabil.fixture.api;
 
+import java.util.UUID;
+
+import com.ericrabil.fixture.api.exception.UUIDSecurityException;
+
 public class Entry {
 	private String key;
 	private String value;
 	
 	private int db_uuid;
 	
-	private int uuid;
+	private UUID uuid = null;
 	
-	public Entry(String k, String v, int id, int db_uuid){
+	public Entry(String k, String v, UUID id, int db_uuid){
 		this.key = k;
 		this.value = v;
 		this.uuid = id;
@@ -35,7 +39,16 @@ public class Entry {
 		return this.db_uuid;
 	}
 	
-	public int getUUID(){
+	public UUID getUUID(){
 		return this.uuid;
+	}
+	
+	public void setUUID(UUID u) throws UUIDSecurityException{
+		if(uuid == null){
+			this.uuid = u;
+		}else{
+			//UUID cannot be changed after it has been set for security and stability purposes.
+			throw new UUIDSecurityException("The UUID for Entry ID " + db_uuid + " cannot be changed after it has been set.");
+		}
 	}
 }

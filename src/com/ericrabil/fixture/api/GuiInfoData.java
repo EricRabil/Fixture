@@ -28,13 +28,6 @@ public class GuiInfoData {
 	
 	/**
 	 * Instantiates a new gui info data.
-	 */
-	public GuiInfoData(){
-		this.title = "Missing Title Value!"; this.message = new Text("Missing Message Value!"); this.type = InfoType.GENERIC;
-	}
-	
-	/**
-	 * Instantiates a new gui info data.
 	 *
 	 * @param title passes the title and makes the rest of the values generic.
 	 */

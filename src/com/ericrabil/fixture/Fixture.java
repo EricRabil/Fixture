@@ -6,9 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.ericrabil.fixture.api.Database;
-import com.ericrabil.fixture.api.Entry;
 import com.ericrabil.fixture.api.GuiInfoData;
 import com.ericrabil.fixture.api.InfoType;
 import com.ericrabil.fixture.api.Releases;
@@ -55,7 +55,7 @@ public class Fixture {
 	/** The db config. */
 	private DBConfig dbConfig;
 	
-	private HashMap<Integer, Database> dbMap = new HashMap<Integer, Database>();
+	private HashMap<UUID, Database> dbMap = new HashMap<UUID, Database>();
 	
 	/** The can write. */
 	private boolean canWrite;
@@ -143,7 +143,7 @@ public class Fixture {
 		}
 	}
 	
-	public Database getDatabase(int uuid){
+	public Database getDatabase(UUID uuid){
 		return this.dbMap.get(uuid);
 	}
 	

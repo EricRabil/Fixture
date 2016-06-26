@@ -1,12 +1,18 @@
 package com.ericrabil.fixture.gui;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.ericrabil.fixture.Fixture;
 import com.ericrabil.fixture.api.Database;
+import com.ericrabil.fixture.api.GuiInfoData;
+import com.ericrabil.fixture.api.InfoType;
+import com.ericrabil.fixture.api.exception.DatabaseExistsException;
+import com.ericrabil.fixture.database.DAOException;
+import com.ericrabil.fixture.database.IContext;
+import com.ericrabil.fixture.database.db.DBDatabaseDAO;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -58,6 +64,23 @@ public class GuiMain {
 //            	System.out.println(db.getSQLID());
 //            	System.out.println(label.getText());
             	new GuiDBView(f, db);
+            }
+        });
+        Button create = new Button("Create Database");
+        create.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	String value = JOptionPane.showInputDialog("What is the name of the database?", null);
+            	try(IContext ctx = f.createContext()){
+            		DBDatabaseDAO dbdao = ctx.getDatabaseDAO();
+            		dbdao.createDatabase(value);
+            	}catch(DAOException e){
+            		e.printStackTrace();
+            	} catch (DatabaseExistsException e) {
+            		GuiInfoData data = new GuiInfoData("Database Exists", e.getMessage(), InfoType.ERR);
+            		GuiInfo info = new GuiInfo(f, data);
+					e.printStackTrace();
+				}
             }
         });
 		VBox hBoxCombo = new VBox(16, dbList, start);

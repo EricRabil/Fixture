@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ericrabil.fixture.api.Database;
 import com.ericrabil.fixture.api.Entry;
+import com.ericrabil.fixture.api.exception.DatabaseExistsException;
 
 public interface IDatabaseDAO {
 	public ArrayList<Entry> getEntries(Database db) throws DAOException;
@@ -16,5 +17,5 @@ public interface IDatabaseDAO {
 
 	public void updateEntry(Entry e, String key, String value) throws DAOException;
 
-	public Database createDatabase(String name);
+	public Database createDatabase(String name) throws DatabaseExistsException, DAOException;
 }

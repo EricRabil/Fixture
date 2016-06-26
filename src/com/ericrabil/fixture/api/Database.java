@@ -1,8 +1,10 @@
 package com.ericrabil.fixture.api;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.ericrabil.fixture.Fixture;
+import com.ericrabil.fixture.api.exception.UUIDSecurityException;
 import com.ericrabil.fixture.database.DAOException;
 import com.ericrabil.fixture.database.IContext;
 import com.ericrabil.fixture.database.db.DBDatabaseDAO;
@@ -17,9 +19,9 @@ public class Database {
 	
 	private Fixture f;
 	
-	private int uuid;
+	private UUID uuid = null;
 	
-	public Database(Fixture fix, String sqlId, String niceName, ArrayList<Entry> values, int id){
+	public Database(Fixture fix, String sqlId, String niceName, ArrayList<Entry> values, String id){
 		this.f = fix;
 		this.sql_id = sqlId;
 		this.name = niceName;
@@ -29,11 +31,20 @@ public class Database {
 		}else{
 		this.entries = this.entryList.size();
 		}
-		this.uuid = id;
+		this.uuid = UUID.fromString(id);
 	}
 	
 	public String getSQLID(){
 		return this.sql_id;
+	}
+	
+	public void setUUID(UUID u) throws UUIDSecurityException{
+		if(uuid == null){
+			this.uuid = u;
+		}else{
+			//UUID cannot be changed after it has been set for security and stability purposes.
+			throw new UUIDSecurityException("The UUID for " + sql_id + " cannot be changed after it has been set.");
+		}
 	}
 	
 	public String getName(){
@@ -53,7 +64,7 @@ public class Database {
 		return this.entries;
 	}
 	
-	public int getUUID(){
+	public UUID getUUID(){
 		return this.uuid;
 	}
 	
